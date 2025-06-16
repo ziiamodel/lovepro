@@ -885,7 +885,7 @@
             </div>
             <div class="ad-actions">
                 <button class="ad-btn ad-primary" id="upgradeBtn">Upgrade Now</button>
-                <button href='https://www.profitableratecpm.com/kqrx4t3n9?key=a6ced0dfc561a8d600e80b5b516a42e0'  class="ad-btn ad-secondary" id="laterBtn">Maybe Later</button>
+                <button   class="ad-btn ad-secondary" id="laterBtn">Maybe Later</button>
             </div>
             <div class="ad-timer">Ad closes in <span id="adTimer">10</span>s</div>
         </div>
@@ -913,11 +913,15 @@
         laterBtn.addEventListener('click', closePopupAd);
         
         // Upgrade button
-        upgradeBtn.addEventListener('click', function() {
-            alert('Redirecting to premium upgrade page...');
-            closePopupAd();
-        });
-        
+       // Replace the existing upgrade button event listener with this:
+upgradeBtn.addEventListener('click', function() {
+    // Replace this URL with your actual premium upgrade page URL
+    window.location.href = 'https://www.profitableratecpm.com/kqrx4t3n9?key=a6ced0dfc561a8d600e80b5b516a42e0';
+    // You can still keep the closePopupAd() call if you want the ad to close before redirecting
+    closePopupAd();
+});
+
+	    
         // Timer function
         function startAdTimer() {
             let seconds = 10;
