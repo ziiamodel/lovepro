@@ -1,1 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Meter Pro</title>
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --primary-dark: #c9184a;
+            --secondary: #ff8fa3;
+            --light: #fff0f3;
+            --dark: #590d22;
+            --success: #38b000;
+            --warning: #ffaa00;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .app-icon i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .app-description {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 1.5rem 1rem;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.2);
+        }
+
+        .date-inputs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .date-inputs select {
+            flex: 1;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 77, 109, 0.3);
+        }
+
+        .result-section {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .compatibility-meter {
+            width: 100%;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .compatibility-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 15px;
+            transition: width 1s ease-in-out;
+            position: relative;
+        }
+
+        .compatibility-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-details {
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-weight: 700;
+        }
+
+        .zodiac-compatibility {
+            margin-top: 1.5rem;
+        }
+
+        .zodiac-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+
+        .zodiac-pair {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .zodiac-sign {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .zodiac-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .zodiac-icon i {
+            font-size: 1.75rem;
+            color: var(--primary-dark);
+        }
+
+        .zodiac-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .vs-icon {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .zodiac-score {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .zodiac-description {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #555;
+        }
+
+       .features-section {
+    margin-top: 2.5rem;
+    margin-bottom: 4.5rem;
+}
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.75rem;
+        }
+
+        .feature-icon i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .history-section {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .history-section.active {
+            display: block;
+        }
+
+        .history-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .history-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-names {
+            font-weight: 600;
+        }
+
+        .history-percentage {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+            margin: 0 auto;
+            z-index: 10;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+        }
+
+        .tab-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .share-btn {
+            background: var(--light);
+            color: var(--primary-dark);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .share-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: auto;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 380px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .zodiac-pair {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Animation for love meter */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        /* Heart animation */
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+    </style>
+	
+	
+	<style>
+    .popup-ad {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .popup-ad.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .ad-container {
+        background: white;
+        width: 90%;
+        max-width: 350px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .popup-ad.active .ad-container {
+        transform: scale(1);
+    }
+
+    .ad-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .ad-content {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .ad-content img {
+        width: 100%;
+        max-height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .ad-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .ad-text {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ad-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .ad-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .ad-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+    }
+
+    .ad-secondary {
+        background: white;
+        color: var(--primary-dark);
+        border: 2px solid var(--primary);
+    }
+
+    .ad-timer {
+        margin-top: 1rem;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .close-ad {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+
+
+
+
+
+
+
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-content">
+                <div class="app-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h1>Love Meter Pro</h1>
+                <p class="app-description">Discover your true compatibility with advanced analysis</p>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="name1">Your Name</label>
+                    <input type="text" id="name1" placeholder="Enter your name">
+                </div>
+                <div class="input-group">
+                    <label for="name2">Partner's Name</label>
+                    <input type="text" id="name2" placeholder="Enter partner's name">
+                </div>
+                <div class="input-group">
+                    <label>Your Birthdate</label>
+                    <div class="date-inputs">
+                        <select id="day1">
+                            <option value="">Day</option>
+                            <script>
+                                for(let i = 1; i <= 31; i++) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                        <select id="month1">
+                            <option value="">Month</option>
+                            <script>
+                                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                                months.forEach((month, index) => {
+                                    document.write(`<option value="${index + 1}">${month}</option>`);
+                                });
+                            </script>
+                        </select>
+                        <select id="year1">
+                            <option value="">Year</option>
+                            <script>
+                                const currentYear = new Date().getFullYear();
+                                for(let i = currentYear; i >= currentYear - 100; i--) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Partner's Birthdate</label>
+                    <div class="date-inputs">
+                        <select id="day2">
+                            <option value="">Day</option>
+                            <script>
+                                for(let i = 1; i <= 31; i++) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                        <select id="month2">
+                            <option value="">Month</option>
+                            <script>
+                                months.forEach((month, index) => {
+                                    document.write(`<option value="${index + 1}">${month}</option>`);
+                                });
+                            </script>
+                        </select>
+                        <select id="year2">
+                            <option value="">Year</option>
+                            <script>
+                                for(let i = currentYear; i >= currentYear - 100; i--) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate-btn" id="calculateBtn">
+                    <i class="fas fa-heart"></i> Calculate Love
+                </button>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <h2 class="result-title">Your Love Compatibility</h2>
+                <div class="compatibility-meter">
+                    <div class="compatibility-fill" id="compatibilityFill">
+                        <span class="compatibility-percentage" id="compatibilityPercentage">0%</span>
+                    </div>
+                </div>
+                
+                <div class="result-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Name Compatibility</span>
+                        <span class="detail-value" id="nameCompatibility">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Zodiac Match</span>
+                        <span class="detail-value" id="zodiacMatch">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Age Difference</span>
+                        <span class="detail-value" id="ageDifference">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Relationship Advice</span>
+                        <span class="detail-value" id="relationshipAdvice">-</span>
+                    </div>
+                </div>
+
+                <div class="zodiac-compatibility">
+                    <h3 class="zodiac-title">Zodiac Compatibility</h3>
+                    <div class="zodiac-pair">
+                        <div class="zodiac-sign">
+                            <div class="zodiac-icon" id="zodiacIcon1">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <span class="zodiac-name" id="zodiacName1">-</span>
+                        </div>
+                        <span class="vs-icon">VS</span>
+                        <div class="zodiac-sign">
+                            <div class="zodiac-icon" id="zodiacIcon2">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <span class="zodiac-name" id="zodiacName2">-</span>
+                        </div>
+                    </div>
+                    <div class="zodiac-score" id="zodiacScore">Compatibility Score: -</div>
+                    <div class="zodiac-description" id="zodiacDescription">
+                        Enter your birthdates to see zodiac compatibility analysis.
+                    </div>
+                </div>
+
+                <button class="share-btn" id="shareBtn">
+                    <i class="fas fa-share-alt"></i> Share Results
+                </button>
+            </div>
+
+            <div class="features-section">
+                <h2 class="section-title"><i class="fas fa-star"></i> Premium Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">Advanced Analytics</h3>
+                        <p class="feature-desc">Detailed breakdown of your compatibility factors</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Date Ideas</h3>
+                        <p class="feature-desc">Personalized suggestions based on your match</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3 class="feature-title">History Tracking</h3>
+                        <p class="feature-desc">Save and compare previous results</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <h3 class="feature-title">Premium Insights</h3>
+                        <p class="feature-desc">Unlock deeper relationship analysis</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section" id="historySection">
+                <h2 class="section-title"><i class="fas fa-history"></i> Recent Calculations</h2>
+                <div class="history-list" id="historyList">
+                    <!-- History items will be added here dynamically -->
+                    <div class="history-item empty-history">
+                        No calculations yet. Calculate your first match!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <a href="#" class="tab-item active" id="homeTab">
+                <i class="fas fa-home tab-icon"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="tab-item" id="historyTab">
+                <i class="fas fa-history tab-icon"></i>
+                <span>History</span>
+            </a>
+            <a href="#" class="tab-item">
+                <i class="fas fa-cog tab-icon"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+    </div>
+
+
+
+
+
+
+
+<!-- Add this HTML right after the opening <body> tag -->
+<div class="popup-ad" id="popupAd">
+    <div class="close-ad" id="closeAd">✕</div>
+    <div class="ad-container">
+        <div class="ad-header">
+            Special Offer!
+        </div>
+        <div class="ad-content">
+           
+            <div class="ad-title">Upgrade to Premium</div>
+            <div class="ad-text">
+                Get detailed relationship insights, unlimited history, and no ads!
+                Limited time 50% discount for new users.
+            </div>
+            <div class="ad-actions">
+                <button class="ad-btn ad-primary" id="upgradeBtn">Upgrade Now</button>
+                <button class="ad-btn ad-secondary" id="laterBtn">Maybe Later</button>
+            </div>
+            <div class="ad-timer">Ad closes in <span id="adTimer">10</span>s</div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this JavaScript to the script section -->
+<script>
+    // Popup Ad functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const popupAd = document.getElementById('popupAd');
+        const closeAd = document.getElementById('closeAd');
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        const laterBtn = document.getElementById('laterBtn');
+        const adTimer = document.getElementById('adTimer');
+        
+        // Show ad after 1 second
+        setTimeout(() => {
+            popupAd.classList.add('active');
+            startAdTimer();
+        }, 1000);
+        
+        // Close ad button
+        closeAd.addEventListener('click', closePopupAd);
+        laterBtn.addEventListener('click', closePopupAd);
+        
+        // Upgrade button
+        upgradeBtn.addEventListener('click', function() {
+            alert('Redirecting to premium upgrade page...');
+            closePopupAd();
+        });
+        
+        // Timer function
+        function startAdTimer() {
+            let seconds = 10;
+            adTimer.textContent = seconds;
+            
+            const timer = setInterval(() => {
+                seconds--;
+                adTimer.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    closePopupAd();
+                }
+            }, 1000);
+        }
+        
+        function closePopupAd() {
+            popupAd.classList.remove('active');
+            setTimeout(() => {
+                popupAd.style.display = 'none';
+            }, 300); // Match the transition duration
+        }
+    });
+</script>
+
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resultSection = document.getElementById('resultSection');
+            const compatibilityFill = document.getElementById('compatibilityFill');
+            const compatibilityPercentage = document.getElementById('compatibilityPercentage');
+            const nameCompatibility = document.getElementById('nameCompatibility');
+            const zodiacMatch = document.getElementById('zodiacMatch');
+            const ageDifference = document.getElementById('ageDifference');
+            const relationshipAdvice = document.getElementById('relationshipAdvice');
+            const zodiacName1 = document.getElementById('zodiacName1');
+            const zodiacName2 = document.getElementById('zodiacName2');
+            const zodiacIcon1 = document.getElementById('zodiacIcon1');
+            const zodiacIcon2 = document.getElementById('zodiacIcon2');
+            const zodiacScore = document.getElementById('zodiacScore');
+            const zodiacDescription = document.getElementById('zodiacDescription');
+            const shareBtn = document.getElementById('shareBtn');
+            const homeTab = document.getElementById('homeTab');
+            const historyTab = document.getElementById('historyTab');
+            const historySection = document.getElementById('historySection');
+            const historyList = document.getElementById('historyList');
+            
+            // Zodiac signs data
+            const zodiacSigns = [
+                { name: "Aries", icon: "fas fa-fire", dates: [3, 21, 4, 19] },
+                { name: "Taurus", icon: "fas fa-bull", dates: [4, 20, 5, 20] },
+                { name: "Gemini", icon: "fas fa-users", dates: [5, 21, 6, 20] },
+                { name: "Cancer", icon: "fas fa-crab", dates: [6, 21, 7, 22] },
+                { name: "Leo", icon: "fas fa-lion", dates: [7, 23, 8, 22] },
+                { name: "Virgo", icon: "fas fa-leaf", dates: [8, 23, 9, 22] },
+                { name: "Libra", icon: "fas fa-balance-scale", dates: [9, 23, 10, 22] },
+                { name: "Scorpio", icon: "fas fa-scorpion", dates: [10, 23, 11, 21] },
+                { name: "Sagittarius", icon: "fas fa-arrow-right", dates: [11, 22, 12, 21] },
+                { name: "Capricorn", icon: "fas fa-mountain", dates: [12, 22, 1, 19] },
+                { name: "Aquarius", icon: "fas fa-water", dates: [1, 20, 2, 18] },
+                { name: "Pisces", icon: "fas fa-fish", dates: [2, 19, 3, 20] }
+            ];
+            
+            // Compatibility descriptions
+            const compatibilityDescriptions = {
+                high: "Your zodiac signs have excellent compatibility! You're likely to have a strong emotional connection and understanding of each other.",
+                medium: "Your zodiac signs have decent compatibility. With effort and communication, you can build a meaningful relationship.",
+                low: "Your zodiac signs may face challenges in compatibility. Understanding and compromise will be key to your relationship success."
+            };
+            
+            // Relationship advice
+            const adviceList = [
+                "Communication is key - make time to talk openly about your feelings.",
+                "Plan regular date nights to keep the spark alive.",
+                "Learn each other's love languages to show affection effectively.",
+                "Respect each other's need for personal space and independence.",
+                "Celebrate small moments together to build positive memories.",
+                "Practice active listening when your partner is sharing their thoughts.",
+                "Find shared hobbies or interests to bond over.",
+                "Be patient with each other's flaws and imperfections.",
+                "Express gratitude for the little things your partner does.",
+                "Work on building trust through honesty and reliability."
+            ];
+            
+            // Tab switching
+            homeTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.main-content > :not(.input-section):not(.result-section):not(.features-section)').style.display = 'none';
+                document.querySelector('.input-section').style.display = 'block';
+                document.querySelector('.features-section').style.display = 'block';
+                if (resultSection.classList.contains('active')) {
+                    resultSection.style.display = 'block';
+                }
+                homeTab.classList.add('active');
+                historyTab.classList.remove('active');
+            });
+            
+            historyTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.input-section').style.display = 'none';
+                document.querySelector('.result-section').style.display = 'none';
+                document.querySelector('.features-section').style.display = 'none';
+                historySection.style.display = 'block';
+                homeTab.classList.remove('active');
+                historyTab.classList.add('active');
+            });
+            
+            // Calculate love compatibility
+            calculateBtn.addEventListener('click', function() {
+                const name1 = document.getElementById('name1').value.trim();
+                const name2 = document.getElementById('name2').value.trim();
+                const day1 = parseInt(document.getElementById('day1').value);
+                const month1 = parseInt(document.getElementById('month1').value);
+                const year1 = parseInt(document.getElementById('year1').value);
+                const day2 = parseInt(document.getElementById('day2').value);
+                const month2 = parseInt(document.getElementById('month2').value);
+                const year2 = parseInt(document.getElementById('year2').value);
+                
+                // Validate inputs
+                if (!name1 || !name2) {
+                    alert("Please enter both names");
+                    return;
+                }
+                
+                if (isNaN(day1) || isNaN(month1) || isNaN(year1) || 
+                    isNaN(day2) || isNaN(month2) || isNaN(year2)) {
+                    alert("Please select complete birthdates for both partners");
+                    return;
+                }
+                
+                // Calculate compatibility (random for demo, but with some logic)
+                let compatibility = 0;
+                
+                // Name compatibility (based on length and common letters)
+                const totalLetters = (name1.length + name2.length) / 2;
+                const commonLetters = getCommonLetters(name1, name2);
+                const nameComp = Math.min(100, Math.round((commonLetters / totalLetters) * 50 + Math.random() * 30));
+                
+                // Age compatibility
+                const age1 = new Date().getFullYear() - year1;
+                const age2 = new Date().getFullYear() - year2;
+                const ageDiff = Math.abs(age1 - age2);
+                let ageComp = 100 - (ageDiff * 2);
+                ageComp = Math.max(30, Math.min(100, ageComp));
+                
+                // Zodiac compatibility
+                const zodiac1 = getZodiacSign(month1, day1);
+                const zodiac2 = getZodiacSign(month2, day2);
+                const zodiacComp = getZodiacCompatibility(zodiac1, zodiac2);
+                
+                // Final compatibility score (weighted average)
+                compatibility = Math.round((nameComp * 0.3) + (ageComp * 0.2) + (zodiacComp.score * 0.5));
+                compatibility = Math.max(10, Math.min(99, compatibility)); // Keep between 10-99%
+                
+                // Display results with animation
+                resultSection.classList.add('active');
+                compatibilityFill.style.width = '0%';
+                compatibilityPercentage.textContent = '0%';
+                
+                let width = 0;
+                const interval = setInterval(function() {
+                    if (width >= compatibility) {
+                        clearInterval(interval);
+                        createHearts();
+                    } else {
+                        width++;
+                        compatibilityFill.style.width = width + '%';
+                        compatibilityPercentage.textContent = width + '%';
+                        
+                        // Change color based on percentage
+                        if (width < 30) {
+                            compatibilityFill.style.background = '#ff6b6b';
+                        } else if (width < 70) {
+                            compatibilityFill.style.background = 'linear-gradient(90deg, #ffb347, #ff8e53)';
+                        } else {
+                            compatibilityFill.style.background = 'linear-gradient(90deg, #4ecdc4, #56ab91)';
+                        }
+                    }
+                }, 20);
+                
+                // Set other result details
+                nameCompatibility.textContent = nameComp + '%';
+                ageDifference.textContent = ageDiff + ' years';
+                zodiacMatch.textContent = zodiacComp.match;
+                
+                // Set zodiac information
+                zodiacName1.textContent = zodiac1.name;
+                zodiacName2.textContent = zodiac2.name;
+                zodiacIcon1.innerHTML = `<i class="${zodiac1.icon}"></i>`;
+                zodiacIcon2.innerHTML = `<i class="${zodiac2.icon}"></i>`;
+                zodiacScore.textContent = `Compatibility Score: ${zodiacComp.score}%`;
+                zodiacDescription.textContent = zodiacComp.description;
+                
+                // Random relationship advice
+                relationshipAdvice.textContent = adviceList[Math.floor(Math.random() * adviceList.length)];
+                
+                // Add to history
+                addToHistory(name1, name2, compatibility);
+                
+                // Scroll to results
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Share button
+            shareBtn.addEventListener('click', function() {
+                const name1 = document.getElementById('name1').value.trim();
+                const name2 = document.getElementById('name2').value.trim();
+                const percentage = compatibilityPercentage.textContent;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Love Meter Results',
+                        text: `${name1} and ${name2} have a ${percentage} compatibility score! Check your love match.`,
+                        url: window.location.href
+                    }).catch(err => {
+                        console.log('Error sharing:', err);
+                        fallbackShare();
+                    });
+                } else {
+                    fallbackShare();
+                }
+                
+                function fallbackShare() {
+                    alert(`Share these results: ${name1} and ${name2} have a ${percentage} compatibility score!`);
+                }
+            });
+            
+            // Helper functions
+            function getCommonLetters(name1, name2) {
+                const name1Lower = name1.toLowerCase();
+                const name2Lower = name2.toLowerCase();
+                let common = 0;
+                
+                for (let i = 0; i < name1Lower.length; i++) {
+                    if (name2Lower.includes(name1Lower[i])) {
+                        common++;
+                    }
+                }
+                
+                return common;
+            }
+            
+            function getZodiacSign(month, day) {
+                for (const sign of zodiacSigns) {
+                    if ((month === sign.dates[0] && day >= sign.dates[1]) || 
+                        (month === sign.dates[2] && day <= sign.dates[3])) {
+                        return sign;
+                    }
+                }
+                return zodiacSigns[0]; // Default to Aries if not found (shouldn't happen)
+            }
+            
+            function getZodiacCompatibility(sign1, sign2) {
+                // Simplified compatibility - in a real app this would be more detailed
+                const signIndex1 = zodiacSigns.findIndex(s => s.name === sign1.name);
+                const signIndex2 = zodiacSigns.findIndex(s => s.name === sign2.name);
+                
+                const diff = Math.abs(signIndex1 - signIndex2);
+                let score, match, description;
+                
+                if (diff === 0) {
+                    // Same sign
+                    score = 85 + Math.floor(Math.random() * 10);
+                    match = "Perfect Match";
+                    description = `Both being ${sign1.name} signs, you share many traits and understand each other deeply.`;
+                } else if (diff === 1 || diff === 11) {
+                    // Adjacent signs
+                    score = 70 + Math.floor(Math.random() * 15);
+                    match = "Good Match";
+                    description = `As ${sign1.name} and ${sign2.name}, you complement each other well with some differences to keep things interesting.`;
+                } else if (diff === 5 || diff === 6) {
+                    // Opposite signs
+                    score = 60 + Math.floor(Math.random() * 20);
+                    match = "Challenging Match";
+                    description = `As opposite signs (${sign1.name} and ${sign2.name}), you may have strong attraction but also significant differences to navigate.`;
+                } else if (diff === 3 || diff === 4 || diff === 8 || diff === 9) {
+                    // Semi-compatible
+                    score = 50 + Math.floor(Math.random() * 20);
+                    match = "Moderate Match";
+                    description = `Your signs (${sign1.name} and ${sign2.name}) have some compatibility but may require work to harmonize your differences.`;
+                } else {
+                    // Other combinations
+                    score = 40 + Math.floor(Math.random() * 30);
+                    match = "Mixed Match";
+                    description = `Your combination of ${sign1.name} and ${sign2.name} has both strengths and challenges in compatibility.`;
+                }
+                
+                // Add some randomness and ensure score is between 30-95
+                score = Math.max(30, Math.min(95, score));
+                
+                // Set description based on score
+                if (score >= 70) {
+                    description = compatibilityDescriptions.high;
+                } else if (score >= 40) {
+                    description = compatibilityDescriptions.medium;
+                } else {
+                    description = compatibilityDescriptions.low;
+                }
+                
+                return { score, match, description };
+            }
+            
+            function addToHistory(name1, name2, percentage) {
+                // Remove empty history message if present
+                const emptyHistory = document.querySelector('.empty-history');
+                if (emptyHistory) {
+                    emptyHistory.remove();
+                }
+                
+                // Create history item
+                const now = new Date();
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div>
+                        <div class="history-names">${name1} & ${name2}</div>
+                        <div class="history-date">${now.toLocaleDateString()}</div>
+                    </div>
+                    <div class="history-percentage">${percentage}%</div>
+                `;
+                
+                // Add to top of history list
+                historyList.insertBefore(historyItem, historyList.firstChild);
+                
+                // Limit to 10 items
+                if (historyList.children.length > 10) {
+                    historyList.removeChild(historyList.lastChild);
+                }
+            }
+            
+            function createHearts() {
+                // Create floating hearts animation
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart';
+                        heart.innerHTML = '<i class="fas fa-heart" style="color: #ff4d6d;"></i>';
+                        heart.style.left = Math.random() * 100 + 'vw';
+                        heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                        heart.style.animation = `float ${Math.random() * 3 + 2}s linear forwards`;
+                        document.body.appendChild(heart);
+                        
+                        // Remove heart after animation
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 5000);
+                    }, i * 300);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
