@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who Loves You More? Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff8fa3;
+            --light: #fff0f3;
+            --dark: #590d22;
+            --text: #333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text);
+        }
+        
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        
+        .intro {
+            margin-bottom: 30px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .quiz-section, .result {
+            display: none;
+        }
+        
+        .active {
+            display: block;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            padding: 15px;
+            background-color: white;
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            color: var(--text);
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .option:hover {
+            background-color: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 79, 109, 0.2);
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 10px;
+            margin: 25px 0;
+            height: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+        
+        .progress-text {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        
+        .result-image {
+            width: 220px;
+            height: 220px;
+            margin: 20px auto;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+        
+        .result-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .result-description {
+            color: var(--text);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .result-percentage {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        .percentage-box {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            width: 45%;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .percentage-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .percentage-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .percentage-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .percentage-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .percentage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 1.5s ease-out;
+        }
+        
+        .button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(255, 79, 109, 0.3);
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(255, 79, 109, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(1px);
+        }
+        
+        .names-input {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .name-input {
+            padding: 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(255, 143, 163, 0.3);
+        }
+        
+        .heart {
+            color: var(--primary);
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+        }
+        
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .heart-emoji {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: float 6s linear infinite;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+            
+            .percentage-box {
+                width: 100%;
+            }
+            
+            .result-percentage {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="floating-hearts" id="hearts-container"></div>
+        
+        <h1>Who Loves You More? <span class="heart">❤</span></h1>
+        
+        <div class="intro active" id="intro-section">
+            <p>Discover who holds more love for you between two special people in your life!</p>
+            <p>Answer just 5 random questions and we'll reveal the results with a detailed analysis.</p>
+            
+            <div class="names-input">
+                <input type="text" id="name1" class="name-input" placeholder="First person's name (e.g., Sarah)" required>
+                <input type="text" id="name2" class="name-input" placeholder="Second person's name (e.g., Alex)" required>
+                <div class="error-message" id="name-error">Please enter at least one name to begin!</div>
+            </div>
+            
+            <button class="button" id="start-btn">Begin Love Test</button>
+        </div>
+        
+        <div class="quiz-section" id="quiz-section">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Question 1 of 5</div>
+            
+            <div class="question" id="question"></div>
+            
+            <div class="options" id="options"></div>
+        </div>
+        
+        <div class="result" id="result-section">
+            <div class="result-title" id="result-title"></div>
+            <img src="https://source.unsplash.com/random/600x600/?love,romantic" class="result-image" id="result-image" alt="Romantic image">
+            
+            <div class="result-percentage">
+                <div class="percentage-box">
+                    <div class="percentage-name" id="name1-result"></div>
+                    <div class="percentage-value" id="percentage1">0%</div>
+                    <div class="percentage-bar">
+                        <div class="percentage-fill" id="percentage-bar1"></div>
+                    </div>
+                </div>
+                
+                <div class="percentage-box">
+                    <div class="percentage-name" id="name2-result"></div>
+                    <div class="percentage-value" id="percentage2">0%</div>
+                    <div class="percentage-bar">
+                        <div class="percentage-fill" id="percentage-bar2"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-description" id="result-description"></div>
+            <button class="button" id="restart-btn">Test Another Pair</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const introSection = document.getElementById('intro-section');
+            const quizSection = document.getElementById('quiz-section');
+            const resultSection = document.getElementById('result-section');
+            const startBtn = document.getElementById('start-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const resultTitle = document.getElementById('result-title');
+            const resultDescription = document.getElementById('result-description');
+            const resultImage = document.getElementById('result-image');
+            const name1Input = document.getElementById('name1');
+            const name2Input = document.getElementById('name2');
+            const name1Result = document.getElementById('name1-result');
+            const name2Result = document.getElementById('name2-result');
+			const percentageText1 = document.getElementById('percentage1');
+			const percentageText2 = document.getElementById('percentage2');
+            const percentageBar1 = document.getElementById('percentage-bar1');
+            const percentageBar2 = document.getElementById('percentage-bar2');
+            const heartsContainer = document.getElementById('hearts-container');
+            const nameError = document.getElementById('name-error');
+            
+            // Create floating hearts
+            function createHearts() {
+                const hearts = ['❤', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍'];
+                for (let i = 0; i < 15; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-emoji';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDuration = 4 + Math.random() * 8 + 's';
+                    heart.style.animationDelay = Math.random() * 5 + 's';
+                    heartsContainer.appendChild(heart);
+                }
+            }
+            
+            createHearts();
+            
+            // Quiz variables
+            let currentQuestion = 0;
+            let score1 = 0;
+            let score2 = 0;
+            let name1 = '';
+            let name2 = '';
+            let selectedQuestions = [];
+            
+            // All possible questions (15 total)
+            const allQuestions = [
+                {
+                    question: "Who remembers small details about you (like your favorite food or important dates)?",
+                    options: [
+                        "{name1} remembers everything",
+                        "{name1} remembers most things",
+                        "Both remember equally",
+                        "{name2} remembers most things",
+                        "{name2} remembers everything"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who initiates contact more often (calls, texts, or plans to meet)?",
+                    options: [
+                        "{name1} always reaches out first",
+                        "{name1} usually initiates",
+                        "It's about equal",
+                        "{name2} usually initiates",
+                        "{name2} always reaches out first"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who goes out of their way to make you happy or surprise you?",
+                    options: [
+                        "{name1} constantly does sweet things",
+                        "{name1} often does nice things",
+                        "Both try equally",
+                        "{name2} often does nice things",
+                        "{name2} constantly does sweet things"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who supports you more during tough times?",
+                    options: [
+                        "{name1} is my rock during hard times",
+                        "{name1} is usually supportive",
+                        "Both are equally supportive",
+                        "{name2} is usually supportive",
+                        "{name2} is my rock during hard times"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who makes you feel more loved and appreciated?",
+                    options: [
+                        "{name1} makes me feel incredibly loved",
+                        "{name1} makes me feel loved",
+                        "Both make me feel equally loved",
+                        "{name2} makes me feel loved",
+                        "{name2} makes me feel incredibly loved"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who is more physically affectionate with you?",
+                    options: [
+                        "{name1} is very affectionate",
+                        "{name1} is somewhat affectionate",
+                        "Both are equally affectionate",
+                        "{name2} is somewhat affectionate",
+                        "{name2} is very affectionate"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who listens more attentively when you speak?",
+                    options: [
+                        "{name1} always listens carefully",
+                        "{name1} usually pays attention",
+                        "Both listen equally well",
+                        "{name2} usually pays attention",
+                        "{name2} always listens carefully"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who compromises more to make you happy?",
+                    options: [
+                        "{name1} often compromises for me",
+                        "{name1} sometimes compromises",
+                        "Both compromise equally",
+                        "{name2} sometimes compromises",
+                        "{name2} often compromises for me"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who makes more eye contact and smiles at you?",
+                    options: [
+                        "{name1} does this constantly",
+                        "{name1} does this often",
+                        "Both do this equally",
+                        "{name2} does this often",
+                        "{name2} does this constantly"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who remembers and celebrates your achievements more?",
+                    options: [
+                        "{name1} celebrates all my wins",
+                        "{name1} notices most achievements",
+                        "Both celebrate equally",
+                        "{name2} notices most achievements",
+                        "{name2} celebrates all my wins"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who gets more jealous or protective of you?",
+                    options: [
+                        "{name1} shows clear signs of protectiveness",
+                        "{name1} shows some protectiveness",
+                        "Both show equal amounts",
+                        "{name2} shows some protectiveness",
+                        "{name2} shows clear signs of protectiveness"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who makes more future plans that include you?",
+                    options: [
+                        "{name1} includes me in long-term plans",
+                        "{name1} includes me in some plans",
+                        "Both include me equally",
+                        "{name2} includes me in some plans",
+                        "{name2} includes me in long-term plans"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who gives you more thoughtful gifts?",
+                    options: [
+                        "{name1}'s gifts are always perfect",
+                        "{name1} gives good gifts",
+                        "Both give equally thoughtful gifts",
+                        "{name2} gives good gifts",
+                        "{name2}'s gifts are always perfect"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who makes more effort with your friends/family?",
+                    options: [
+                        "{name1} goes above and beyond",
+                        "{name1} makes good effort",
+                        "Both try equally hard",
+                        "{name2} makes good effort",
+                        "{name2} goes above and beyond"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                },
+                {
+                    question: "Who apologizes first after arguments?",
+                    options: [
+                        "{name1} always tries to make up",
+                        "{name1} usually apologizes first",
+                        "It's about equal",
+                        "{name2} usually apologizes first",
+                        "{name2} always tries to make up"
+                    ],
+                    weights: [2, 1, 0, -1, -2]
+                }
+            ];
+            
+            // Result descriptions
+            const resultDescriptions = [
+                {
+                    title: "It's Completely One-Sided!",
+                    description: "The results couldn't be clearer - one person's feelings are significantly stronger than the other's!",
+                    image: "https://img.freepik.com/free-photo/couple-field-brunette-white-dress-pair-sitting-grass_1157-39859.jpg?ga=GA1.1.228007043.1745728573&semt=ais_hybrid&w=740"
+                },
+                {
+                    title: "There's a Clear Winner!",
+                    description: "One person's affection clearly stands out, though the other still cares about you!",
+                    image: "https://img.freepik.com/free-photo/couple-embracing-looking-lake_1153-1338.jpg?ga=GA1.1.228007043.1745728573&semt=ais_hybrid&w=740"
+                },
+                {
+                    title: "It's Pretty Close!",
+                    description: "Both people have strong feelings for you, but one edges out the other slightly.",
+                    image: "https://img.freepik.com/free-photo/young-couple-enjoying-sunset-mountain_1150-45127.jpg?ga=GA1.1.228007043.1745728573&semt=ais_hybrid&w=740"
+                },
+                {
+                    title: "It's Almost Equal!",
+                    description: "Their feelings for you are nearly identical - you're truly blessed to have such equal love from both!",
+                    image: "https://i.pinimg.com/originals/ef/04/90/ef0490e79f82d63f9f463f9afa7ad3c8.jpg"
+                }
+            ];
+            
+            // Event Listeners
+            startBtn.addEventListener('click', startQuiz);
+            restartBtn.addEventListener('click', restartQuiz);
+            
+            // Functions
+            function startQuiz() {
+                name1 = name1Input.value.trim() || "Person 1";
+                name2 = name2Input.value.trim() || "Person 2";
+                
+                // Validate at least one name is entered
+                if (!name1Input.value.trim() && !name2Input.value.trim()) {
+                    nameError.style.display = 'block';
+                    return;
+                } else {
+                    nameError.style.display = 'none';
+                }
+                
+                // Reset scores and questions
+                currentQuestion = 0;
+                score1 = 0;
+                score2 = 0;
+                
+                // Select 5 unique random questions
+                const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+                selectedQuestions = shuffled.slice(0, 5);
+                
+                // Update UI
+                introSection.classList.remove('active');
+                quizSection.classList.add('active');
+                showQuestion();
+            }
+            
+            function showQuestion() {
+                // Update progress
+                const progress = ((currentQuestion) / selectedQuestions.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `Question ${currentQuestion + 1} of ${selectedQuestions.length}`;
+                
+                // Get current question
+                const questionObj = selectedQuestions[currentQuestion];
+                let questionText = questionObj.question;
+                let options = [...questionObj.options];
+                
+                // Replace name placeholders
+                questionText = questionText.replace(/{name1}/g, name1).replace(/{name2}/g, name2);
+                options = options.map(opt => 
+                    opt.replace(/{name1}/g, name1).replace(/{name2}/g, name2)
+                );
+                
+                // Update DOM
+                questionElement.textContent = questionText;
+                optionsElement.innerHTML = '';
+                
+                // Create option buttons
+                options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.classList.add('option');
+                    button.textContent = option;
+                    button.addEventListener('click', () => selectAnswer(index));
+                    optionsElement.appendChild(button);
+                });
+            }
+            
+            function selectAnswer(optionIndex) {
+                const weights = selectedQuestions[currentQuestion].weights;
+                const selectedWeight = weights[optionIndex];
+                
+                // Update scores based on answer
+                if (selectedWeight > 0) {
+                    score1 += selectedWeight;
+                } else if (selectedWeight < 0) {
+                    score2 += Math.abs(selectedWeight);
+                }
+                
+                // Move to next question or show results
+                currentQuestion++;
+                if (currentQuestion < selectedQuestions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }
+            
+            function showResult() {
+                // Hide quiz, show results
+                quizSection.classList.remove('active');
+                resultSection.classList.add('active');
+                
+                // Calculate percentages
+                const maxPossibleScore = selectedQuestions.length * 2;
+                const percentage1 = Math.max(0, Math.min(100, Math.round((score1 / maxPossibleScore) * 100)));
+                const percentage2 = Math.max(0, Math.min(100, Math.round((score2 / maxPossibleScore) * 100)));
+                
+                // Set result names
+                name1Result.textContent = name1;
+                name2Result.textContent = name2;
+                
+                // Animate result display
+                setTimeout(() => {
+					percentageText1.textContent = percentage1 + '%';
+					percentageText2.textContent = percentage2 + '%';
+					percentageBar1.style.width = percentage1 + '%';
+					percentageBar2.style.width = percentage2 + '%';
+                }, 100);
+                
+                // Determine result level based on score difference
+                let resultLevel;
+                const difference = Math.abs(percentage1 - percentage2);
+                
+                if (difference > 50) {
+                    resultLevel = 0;
+                } else if (difference > 25) {
+                    resultLevel = 1;
+                } else if (difference > 10) {
+                    resultLevel = 2;
+                } else {
+                    resultLevel = 3;
+                }
+                
+                // Set result content
+                const result = resultDescriptions[resultLevel];
+                resultTitle.textContent = result.title;
+                resultDescription.textContent = `${name1} loves you ${percentage1}% and ${name2} loves you ${percentage2}%. ${result.description}`;
+                resultImage.src = result.image;
+                
+                // Ensure progress bar is complete
+                progressBar.style.width = '100%';
+            }
+            
+            function restartQuiz() {
+                // Reset all quiz state
+                currentQuestion = 0;
+                score1 = 0;
+                score2 = 0;
+                name1 = '';
+                name2 = '';
+                
+                // Reset inputs
+                name1Input.value = '';
+                name2Input.value = '';
+                
+                // Reset result displays
+                percentageBar1.style.width = '0%';
+                percentageBar2.style.width = '0%';
+                percentage1.textContent = '0%';
+                percentage2.textContent = '0%';
+                
+                // Update UI
+                resultSection.classList.remove('active');
+                introSection.classList.add('active');
+                progressBar.style.width = '0%';
+            }
+        });
+    </script>
+</body>
+</html>
